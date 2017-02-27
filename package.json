@@ -34,5 +34,8 @@
     "url": "git://github.com/cjkeilig/Polytone.git"
   },
   "author": "ubuntu",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "bower": "^1.8.0"
+  }
 }
