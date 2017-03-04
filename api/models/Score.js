@@ -1,7 +1,10 @@
 /**
  * Score.js
  *
- * @description :: TODO: You might write a short summary of how this model works and what it represents here.
+ * @description :: This is the model for a score, to begin with, this is initialised when a new score is created.
+ * for now it cannot be edited after initialising because of the amount of rework that would have to be done on the client.
+ * The things that might be editable are the name and the tempo, but changing the key and time would require 
+ * a lot of work to restructure the song on the client side.
  * @docs        :: http://sailsjs.org/documentation/concepts/models-and-orm/models
  */
 
@@ -10,6 +13,22 @@ module.exports = {
     attributes: {
         owner: {
             model: 'group'
+        },
+        notes: {
+            collection: 'note',
+            via: 'owner'
+        },
+        name: {
+            type: 'string'
+        },
+        tempo: {
+            type: 'integer'
+        },
+        key: {
+            type: 'string'
+        },
+        time: {
+            type: 'string'
         }
     }
 };

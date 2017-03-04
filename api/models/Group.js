@@ -8,12 +8,11 @@
 module.exports = {
     attributes: {
         name: {
-            type: 'string',
-            primaryKey: true
+            type : 'string'
         },
   	    scores : {
-  	        type: 'score',
-  	        via: 'owner'
+  	        collection : 'score',
+  	        via : 'owner'
   	    }
     }
 };

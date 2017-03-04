@@ -1,0 +1,60 @@
+<div class="jumbotron vertical-center">
+    <div class="container text-center">
+        <div class="container text-center">
+            <h2>Available scores</h2>
+            <ul class="list-group"><% if(!scores[0]==='none') {  for (var i in scores) { %><ul class="list-group-item"><%=scores[i].name%></ul><% } %> </ul> 
+            <% } else { %><p>Looks like you don't have any scores!<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#newModal">Create a new score</button></p><% } %>
+            
+            <!-- Modal content -->
+            <div class="modal fade bd-example-modal-lg" id="newModal" tabindex="-1" role="dialog" aria-labelledby="newModal" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                         <div class="modal-header">
+                             <h4 class="modal-title">Create new score</h4>
+                             <!--<p>Configure the song</p>-->
+                         </div>
+                        <form class="form-horizontal" role="form" method="POST" action="/score/create">
+                            <p>Please enter the song name, time signature, key and tempo</p>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="name">Song name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="time">Time</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="time" name="time" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="key">Key</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="key" name="key" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-2" for="tempo">Tempo</label>
+                                <div class="col-sm-10">
+                                    <input type="number" class="form-control" id="tempo" name="tempo" required>
+                                    <input type="hidden" value="<%=group.id%>" name="owner">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+                                    <input type="submit" class="btn btn-primary"></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+    
