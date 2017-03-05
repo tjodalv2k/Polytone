@@ -2,8 +2,9 @@
     <div class="container text-center">
         <div class="container text-center">
             <h2>Available scores</h2>
-            <ul class="list-group"><% if(!scores[0]==='none') {  for (var i in scores) { %><ul class="list-group-item"><%=scores[i].name%></ul><% } %> </ul> 
-            <% } else { %><p>Looks like you don't have any scores!<button class="btn btn-info btn-sm" data-toggle="modal" data-target="#newModal">Create a new score</button></p><% } %>
+            <ul class="list-group"><% if(scores[0]==='none') { %><p>Looks like you don't have any scores!  <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#newModal">Create a new score</button></p><% } else {   for (var i=0;i<scores.length;i++) { %>
+            <li class="list-group-item"><span class="glyphicon glyphicon-music"></span><%=scores[i].name%><a href="/score/edit/<%=scores[i].id%>">Edit</a><a href="/score/destroy/<%=scores[i].id%>">Delete</a></li><% }%><button class="btn btn-info btn-sm" data-toggle="modal" data-target="#newModal">Create a new score</button><% }%> </ul> 
+            
             
             <!-- Modal content -->
             <div class="modal fade bd-example-modal-lg" id="newModal" tabindex="-1" role="dialog" aria-labelledby="newModal" aria-hidden="true">

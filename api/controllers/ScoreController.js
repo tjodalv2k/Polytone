@@ -5,7 +5,7 @@ module.exports = {
         sails.log.debug(req.allParams());
         Group.findOne({name:req.param('name')}).populate('scores').exec(function(err, group) {
             sails.log.debug(group);
-            if(!group) {
+            if(group.scores.length===0) {
                 group.scores = ['none'];
             }
             res.view('score/show', {scores: group.scores, group:group});
