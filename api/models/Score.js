@@ -14,8 +14,8 @@ module.exports = {
         owner: {
             model: 'group'
         },
-        notes: {
-            collection: 'note',
+        measures: {
+            collection: 'measure',
             via: 'owner'
         },
         name: {

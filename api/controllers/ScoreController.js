@@ -1,10 +1,19 @@
-
+/**
+ * ScoreController
+ *
+ * @description :: Defines functionality for managing scores, users can initially go to a group
+ * in the landing page (see the group/login view).  The users object is not defined, there is no
+ * such thing as 'joining' a group. As long as the person knows the name of the group, they 
+ * can see and edit scores. 
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 module.exports = {
     
     'show' : function(req, res) {
-        sails.log.debug(req.allParams());
         Group.findOne({name:req.param('name')}).populate('scores').exec(function(err, group) {
-            sails.log.debug(group);
+            if(err) {
+                sails.log.debug(err);
+            }
             if(group.scores.length===0) {
                 group.scores = ['none'];
             }
@@ -16,43 +25,35 @@ module.exports = {
             if(err) {
                 sails.log.debug(err);
             }
-            sails.log.debug(score);
             res.redirect('/score/edit/'+ score.id);
         });
     },
     'edit': function(req, res) {
         sails.log.debug(req.allParams());
-        Score.findOne(req.param('id')).populate('notes').exec(function(err, score) {
+        Score.findOne(req.param('id')).populate('measures').exec(function(err, score) {
             res.view('score/edit', {
                 score: score
             });
         });
     },
     
-   'subscribeToScore': function (req, res) {
-    // if request is not a socket request
-    if (!req.isSocket) {
-      return res.badRequest('Only a client socket can subscribe to Louies.  You, sir or madame, appear to be an HTTP request.');
-    }
-
-    // First we'll find all users named "louie" (or "louis" even-- we should be thorough)
-    Score.find({ and: [{group: req.param('group')},{score: req.param('score')}] }).exec(function(err, theScore){
-      if (err) {
-        return res.serverError(err);
+   'joinRoom': function (req, res) {
+      // if request is not a socket request
+  
+      if (!req.isSocket) {
+        return res.badRequest();
+        sails.log.debug("BAD request");
       }
-
-      // Now we'll use the ids we found to subscribe our client socket to each of these records.
-      Group.subscribe(req, _.pluck(theScore, 'id'));
-
-      // Now any time a user named "louie" or "louis" is modified or destroyed, our client socket
-      // will receive a notification (as long as it stays connected anyways).
-
-      // All done!  We could send down some data, but instead we send an empty response.
-      // (although we're ok telling this vengeful client socket when our users get
-      //  destroyed, it seems ill-advised to send him our Louies' sensitive user data.
-      //  We don't want to help this guy to hunt them down in real life.)
-      return res.ok();
-    });
+      // the room name is just the score id, which is unique
+      var roomName = req.param('id');
+      sails.sockets.join(req, roomName, function(err) {
+        if (err) {
+          return res.serverError(err);
+        }
+        
+        return res.json({
+          message: 'Subscribed to a fun room called '+roomName+'!'
+        });
+      });
     }
-    
 };
