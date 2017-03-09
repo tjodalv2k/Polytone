@@ -11,18 +11,20 @@
 module.exports = {
     update: function(req, res) { sails.log.debug(req);
         Measure.update(req.allParams()).exec(function(err, measure) {
-           sails.sockets.broadcast(measure.owner, measure); 
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'updated', measure: measure}, req); 
         });
     },
     destroy: function(req, res) { sails.log.debug(req);
-        Measure.destroy(req.allParams()).exec(function(err, measure) {
-           sails.sockets.broadcast(measure.owner, measure); 
+        Measure.destroy(req.allParams()).exec(function(err) {
+            if(err) {
+                sails.log.debug(err);
+            }
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'destroyed', measureNumber: req.param('measureNumber') }, req); 
         });
     },
     create: function(req, res) { sails.log.debug(req);
         Measure.create(req.allParams()).exec(function(err, measure) {
-           sails.log.debug(measure);
-           sails.sockets.broadcast(measure.owner, measure); 
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'created', measure: measure }, req); 
         });
     }
 };

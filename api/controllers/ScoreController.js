@@ -45,7 +45,7 @@ module.exports = {
         sails.log.debug("BAD request");
       }
       // the room name is just the score id, which is unique
-      var roomName = req.param('id');
+      var roomName = req.param('id').toString();
       sails.sockets.join(req, roomName, function(err) {
         if (err) {
           return res.serverError(err);
