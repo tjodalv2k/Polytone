@@ -10,8 +10,9 @@
 
 module.exports = {
     update: function(req, res) { sails.log.debug(req);
-        Measure.update(req.allParams()).exec(function(err, measure) {
-           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'updated', measure: measure}, req); 
+        Measure.update({measureNumber: req.param('measureNumber'),owner: req.param('owner')},req.allParams()).exec(function(err, measure) {
+            sails.log.debug(measure);
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'updated', measure: measure}); 
         });
     },
     destroy: function(req, res) { sails.log.debug(req);
@@ -19,12 +20,12 @@ module.exports = {
             if(err) {
                 sails.log.debug(err);
             }
-           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'destroyed', measureNumber: req.param('measureNumber') }, req); 
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'destroyed', measureNumber: req.param('measureNumber') }); 
         });
     },
     create: function(req, res) { sails.log.debug(req);
         Measure.create(req.allParams()).exec(function(err, measure) {
-           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'created', measure: measure }, req); 
+           sails.sockets.broadcast(req.param('owner').toString(), { verb: 'created', measure: measure }); 
         });
     }
 };

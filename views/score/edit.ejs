@@ -1,8 +1,7 @@
 <script>
       'use strict';
-      window.onload = function() {
-      angular.module('myApp',['ngRoute'])
-          .controller('scoreCtrl', function ($scope) {
+      angular.module("myApp", [])
+          .controller("scoreCtrl", function ($scope) {
       var initialServerData = <%if(score.measures.length) { %> <%- JSON.stringify(score.measures) %> <% } else { %> [] <% } %>;
       var serverMeasures = initialServerData.sort(function(a,b) { return a.measureNumber - b.measureNumber}).map(function(a){ return a.measureValue});
       
@@ -20,7 +19,8 @@
                        "\nL:1/8"+
                        "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
       
-      console.log($scope.abcTune);
+      $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
+      console.log($scope.tuneObjectArray);
       $scope.measureNumber = 0;
       $scope.measureValue = new String("");
       $scope.selected = "create";
@@ -40,18 +40,19 @@
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
                        "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+              $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
               $scope.$apply(); 
               // (re-render)
               break;
     		    case 'updated':
-    		      $scope.tune.measures[msg.measure.measureNumber-1] = msg.measure.measureValue;
+    		      $scope.tune.measures[msg.measure[0].measureNumber-1] = msg.measure[0].measureValue;
     		      $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
                        "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+              $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
     		      $scope.$apply();
     			    // handle update
-    			    
     			    break;
     			  case 'destroyed':
     			    $scope.tune.measures.splice(msg.measureNumber-1,1);
@@ -59,6 +60,7 @@
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
                        "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+              $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
               $scope.$apply();
     			    break;
             default: return; // ignore any unrecognized messages
@@ -92,19 +94,12 @@
       	});
       }
       $scope.destroy = function() {
-        io.socket.post('/measure/destroy', {owner: <%=score.id%>, measureNumber: $scope.measureNumber, measureValue: $scope.measureValue}, function(resData, jwRes) {
+        io.socket.post('/measure/destroy', {owner: <%=score.id%>, measureNumber: $scope.measureNumber}, function(resData, jwRes) {
         });
       };
     });
-    
-   //var abc_editor = new ABCJS.Editor("abc", { paper_id: "paper0", midi_id:"midi", warnings_id:"warnings" });
-
-    
-  };
 </script>
-
-<div ng-app="myApp" ng-controller="scoreCtrl">
-<textarea name="abc" id="abc" cols="80" rows="15" ng-bind="abcTune"></textarea>
+<div ng-app="myApp" ng-controller="scoreCtrl"</div>
 <div id="midi"></div>
 <div id="warnings"></div>
 <div id="music"></div>
@@ -112,12 +107,26 @@
 <div id="paper1"></div>
 <div id="paper2"></div>
 <div id="paper3"></div>
-  <input type="radio" ng-model="selected" name="action" value="create">
-  <input type="radio" ng-model="selected" name="action" value="update">
-  <input type="radio" ng-model="selected" name="action" value="destroy">
+  <div class="form-group">
+  <label for="create">Create</label>
+  <input type="radio" ng-model="selected" name="action" value="create" class="form-control" id="create">
+  </div>
+  <div class="form-group">
+  <label for="update">Update</label>
+  <input type="radio" ng-model="selected" name="action" value="update" class="form-control" id="update">
+  </div>
+  <div class="form-group">
+  <label for="destroy">Destroy</label>
+  <input type="radio" ng-model="selected" name="action" value="destroy" class="form-control" id="destroy">
+  </div>
 
-
-  <input type="number" ng-disabled="selected==='create'" ng-model="measureNumber" required>
-  <input type="text" ng-model="measureValue" required>
-  <button ng-click="kickoff()">Go</button>
+  <div class="form-group">
+  <label for="measureNumber">Measure Number</label>
+  <input type="number" ng-disabled="selected==='create'" ng-model="measureNumber" id="measureNumber" class="form-control" required>
+  </div>
+  <div class="form-group">
+  <label for="measureValue">Measure Value</label>
+  <input type="text" ng-disabled="selected==='destroy'" ng-model="measureValue" id="measureValue" required>
+  </div>
+  <button class="btn btn-default" ng-click="kickoff()">Go</button>
 </div>
