@@ -2,6 +2,19 @@
       'use strict';
       angular.module("myApp", [])
           .controller("scoreCtrl", function ($scope) {
+            
+      var formatMeasures = function(measures, mPerLine=5) {
+        var newArray = [];
+        for(var x=0;x<measures.length;x++) {
+          if(x%mPerLine===0) {
+            newArray.push("\n" + measures[x]);
+          }
+          else {
+            newArray.push(measures[x]);
+          }
+        }
+        return newArray.join("|");
+      }
       var initialServerData = <%if(score.measures.length) { %> <%- JSON.stringify(score.measures) %> <% } else { %> [] <% } %>;
       var serverMeasures = initialServerData.sort(function(a,b) { return a.measureNumber - b.measureNumber}).map(function(a){ return a.measureValue});
       
@@ -13,14 +26,14 @@
         time:  '<%=score.time%>',
         measures : serverMeasures
       }
-    
       $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+                       "\nK:"+$scope.tune.key + formatMeasures($scope.tune.measures) + "|";
+      
       
       $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
-      console.log($scope.tuneObjectArray);
+      console.log($scope.abcTune);
       $scope.measureNumber = 0;
       $scope.measureValue = new String("");
       $scope.selected = "create";
@@ -39,9 +52,10 @@
               $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+                       "\nK:"+$scope.tune.key + "|" + formatMeasures($scope.tune.measures) + "|";
+              console.log($scope.abcTune);
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
-              $scope.$apply(); 
+              
               // (re-render)
               break;
     		    case 'updated':
@@ -49,9 +63,8 @@
     		      $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+                       "\nK:"+$scope.tune.key + "\n" + formatMeasures($scope.tune.measures) + "|";
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
-    		      $scope.$apply();
     			    // handle update
     			    break;
     			  case 'destroyed':
@@ -59,9 +72,8 @@
     			    $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n|" + $scope.tune.measures.join("|") + "|";
+                       "\nK:"+$scope.tune.key + "\n" + formatMeasures($scope.tune.measures) + "|";
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
-              $scope.$apply();
     			    break;
             default: return; // ignore any unrecognized messages
           }
