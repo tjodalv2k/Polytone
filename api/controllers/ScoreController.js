@@ -10,11 +10,20 @@
 module.exports = {
     
     'show' : function(req, res) {
-        Group.findOne({name:req.param('name')}).populate('scores').exec(function(err, group) {
+		var obj;
+		if(req.param('name')) {
+			obj = {name:req.param('name')};
+		}
+		else {
+			obj = {id:req.param('id')};
+		}
+		sails.log.debug(obj);
+        Group.findOne(obj).populate('scores').exec(function(err, group) {
             if(err) {
                 sails.log.debug(err);
             }
-            if(group.scores.length===0) {
+			sails.log.debug(group);
+            if(!group.scores) {
                 group.scores = ['none'];
             }
             res.view('score/show', {scores: group.scores, group:group});

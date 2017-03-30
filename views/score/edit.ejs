@@ -57,28 +57,30 @@
               $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "|" + formatMeasures($scope.tune.measures) + "|";
+                       "\nK:"+$scope.tune.key + formatMeasures($scope.tune.measures) + "|";
               console.log($scope.abcTune);
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
               
               // (re-render)
               break;
     		    case 'updated':
-    		      $scope.tune.measures[msg.measure[0].measureNumber-1] = msg.measure[0].measureValue;
+    		      $scope.tune.measures[msg.measure[0].measureNumber] = msg.measure[0].measureValue;
     		      $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n" + formatMeasures($scope.tune.measures) + "|";
+                       "\nK:"+$scope.tune.key + formatMeasures($scope.tune.measures) + "|";
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
     			    // handle update
+					console.log($scope.abcTune);
     			    break;
     			  case 'destroyed':
-    			    $scope.tune.measures.splice(msg.measureNumber-1,1);
+    			    $scope.tune.measures.splice(msg.measureNumber,1);
     			    $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
-                       "\nK:"+$scope.tune.key + "\n" + formatMeasures($scope.tune.measures) + "|";
+                       "\nK:"+$scope.tune.key + formatMeasures($scope.tune.measures) + "|";
               $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
+			  console.log($scope.abcTune);
     			    break;
             default: return; // ignore any unrecognized messages
           }
@@ -128,7 +130,7 @@
         
       }
       $scope.update = function() {
-      	io.socket.post('/measure/update', {owner: <%=score.id%>, measureNumber: $scope.measureNumber, measureValue: $scope.measureValue }, function (resData, jwRes) {
+      	io.socket.post('/measure/update', {owner: <%=score.id%>, measureNumber: $scope.measureNumber-1, measureValue: $scope.measureValue }, function (resData, jwRes) {
     	  });
     
       }
@@ -137,7 +139,7 @@
       	});
       }
       $scope.destroy = function() {
-        io.socket.post('/measure/destroy', {owner: <%=score.id%>, measureNumber: $scope.measureNumber}, function(resData, jwRes) {
+        io.socket.post('/measure/destroy', {owner: <%=score.id%>, measureNumber: $scope.measureNumber-1}, function(resData, jwRes) {
         });
       };
     });

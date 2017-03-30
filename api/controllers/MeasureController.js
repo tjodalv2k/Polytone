@@ -17,6 +17,19 @@ module.exports = {
     },
     destroy: function(req, res) { sails.log.debug(req);
         Measure.destroy(req.allParams()).exec(function(err) {
+			Measure.find( { measureNumber: { '>': req.param('measureNumber') }, owner: req.param('owner') } ).exec(function(err, above) {
+				sails.log.debug(above);
+				var meas;
+				for(var m = 0; m < above.length; m++) {
+					meas = above[m];
+					sails.log.debug(meas);
+					Measure.update(meas, {measureNumber: meas.measureNumber-1}).exec(function(err, rec) {
+						if(err) {
+							sails.log.debug(err);
+						}
+					});
+				}
+			});
             if(err) {
                 sails.log.debug(err);
             }
