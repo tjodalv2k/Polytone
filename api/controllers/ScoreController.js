@@ -36,7 +36,6 @@ module.exports = {
             });
         });
     },
-    
    'joinRoom': function (req, res) {
       // if request is not a socket request
   
@@ -55,5 +54,71 @@ module.exports = {
           message: 'Subscribed to a fun room called '+roomName+'!'
         });
       });
+    },
+    'search': function(req, res) {
+      
+        var http = require('http');
+ 
+        // make a cache and return what is in cache first 
+        var jsdom = require('node-jsdom');
+        // implement async
+        
+        // make sure title is more than 4 letters
+        http.get({
+            host: 'rudy-rucker.mit.edu',
+            path: '/~jc/cgi/abc/tunefind?P=' + req.param('title') + '&find=FIND&m=title&W=wide&scale=1&limit=1000&thresh=5&fmt=single&V=1&Tsel=tune&Nsel=0'
+        }, function(response) {
+            // Continuously update stream with data
+            var body = '';
+            response.on('data', function(d) {
+                body += d;
+            });
+            response.on('end', function() {
+
+                // Data reception is done, do whatever with it!
+                // Scrape the html
+
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (errors, window) {
+                        var obj = {};
+                        var links = [];
+                        var titles = [];
+                        window.$("form td:nth-child(5) a").each(function(){ links.push('http://rudy-rucker.mit.edu' + window.$(this).attr('href')) });
+                        obj.links = links;
+                        window.$("form td:nth-child(18)").each(function(){ titles.push(window.$(this).text()) });
+                        obj.titles = titles;
+                        res.json(obj);
+                    });
+            });
+        });
+
+    },
+    'selectFromApi' : function(req, res) {
+        var http = require('http');
+        var jsdom = require('node-jsdom');
+        //sails.log.debug(decodeURIComponent(req.param('selected')));
+        http.get(req.param('selected'), function(response) {
+            var body = '';
+            response.on('data', function(d) {
+                body += d;
+            });
+            response.on('end', function() {
+                
+                jsdom.env(
+                    body,
+                    ["http://code.jquery.com/jquery.js"],
+                    function (errors, window) {
+                        var obj = {};
+                        
+                        var abc = window.$("pre").text();
+                        sails.log.debug(abc);
+                        obj.abc = abc;
+                        res.json(obj);
+                    });
+            });
+
+        });
     }
 };

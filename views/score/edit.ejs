@@ -1,7 +1,7 @@
 <script>
       'use strict';
       angular.module("myApp", [])
-          .controller("scoreCtrl", function ($scope) {
+          .controller("scoreCtrl", function ($scope, $http) {
             
       var formatMeasures = function(measures, mPerLine=5) {
         var newArray = [];
@@ -26,17 +26,22 @@
         time:  '<%=score.time%>',
         measures : serverMeasures
       }
+      
       $scope.abcTune = "T:"+$scope.tune.title+
                        "\nM:"+$scope.tune.time+
                        "\nL:1/8"+
                        "\nK:"+$scope.tune.key + formatMeasures($scope.tune.measures) + "|";
-      
+      $scope.abcTune2 = "";
       
       $scope.tuneObjectArray = ABCJS.renderAbc("music", $scope.abcTune,{},{},{});
       console.log($scope.abcTune);
       $scope.measureNumber = 0;
       $scope.measureValue = new String("");
       $scope.selected = "create";
+      $scope.songtitles = [];
+      $scope.songlinks = [];
+      $scope.selectedSong = "";
+      $scope.searchText = "";
       
       io.socket.on('connect', function() {
       io.socket.get('/score/joinRoom/'+<%=score.id%>, function(resData, jwres) {console.log(resData);});
@@ -80,7 +85,33 @@
         });
       }
     });
-      
+      $scope.search = function() {
+        // Simple GET request example:
+        $http({
+          method: 'GET',
+          url: '/score/search?title=' + $scope.searchText
+        }).then(function successCallback(response) {
+          console.log(response);
+          $scope.songtitles = response.data.titles;
+          $scope.songlinks = response.data.links;
+        }, function errorCallback(response) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        });
+      }
+      $scope.selectFromApi = function() {
+        var link = $scope.songlinks[$scope.songtitles.indexOf($scope.selectedSong)];
+          $http({
+            method: 'GET',
+            url: '/score/selectFromApi?selected=' + encodeURIComponent(link)
+            }).then(function successCallback(response) { 
+              $scope.abcTune2 = response.data.abc;
+              console.log(response);
+              ABCJS.renderAbc("music2", $scope.abcTune2,{},{},{});
+              
+            });
+  
+      }
       $scope.kickoff = function() {
         console.log($scope.selected);
         switch($scope.selected) {
@@ -141,4 +172,18 @@
   <input type="text" ng-disabled="selected==='destroy'" ng-model="measureValue" id="measureValue" required>
   </div>
   <button class="btn btn-default" ng-click="kickoff()">Go</button>
+  <label for="searchText">Look for inspiration</label>
+  <input type="text" id="searchText" ng-model="searchText">
+  <button class="btn btn-default" ng-click="search()">Search</button>
+  
+  <select ng-model="selectedSong" ng-options="x for x in songtitles">
+  </select>
+  <input type="submit" ng-click="selectFromApi()">
+  <div id="midi2"></div>
+  <div id="warnings2"></div>
+  <div id="music2"></div>
+  <div id="paper02"></div>
+  <div id="paper12"></div>
+  <div id="paper22"></div>
+  <div id="paper32"></div>
 </div>
