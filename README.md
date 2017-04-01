@@ -1,14 +1,16 @@
 # Polytone
 
-a [Sails](http://sailsjs.org) application
+A collaborative ABC music creation application, also a [Sails](http://sailsjs.org) application
 
-To work on the project, fork the repository, clone your repository to your computer, and run
-`npm install`
+To work on the project, fork the repository, clone to your computer, and run
+`npm install` and also `bower install`. This gets all the javascript packages. 
+Feel free to add more database adapters if necessary.
 
 If you need anymore client side javascript, you run 
-`bower install jquery`, this will put the javascripts into bower_components
+`bower install package-name`, this will automatically put the javascripts into bower_components
 
 To inject client side javascript, add lines like these to 'tasks/pipeline.js', you will have to find the exact location of the file you want to inject
+
 `var jsFilesToInject = [
 
   // Load sails.io before everything else
@@ -19,6 +21,11 @@ To inject client side javascript, add lines like these to 'tasks/pipeline.js', y
   
 Please open pull requests and open issues for the project on the [main repository](https://github.com/UNO-ISQA-4380/Polytone)
   
+# Todo
+
+2 APIs are pretty much done, the third rhyming API should be easy. Need to find fourth.
+Need to clean of the code, as well as error/bounds checking, weed out variables and functions that don't need to be on the angular $scope. 
+
 
   
   
