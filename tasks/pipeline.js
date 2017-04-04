@@ -16,10 +16,7 @@
 //
 // (if you're using LESS with the built-in default config, you'll want
 //  to change `assets/styles/importer.less` instead.)
-var cssFilesToInject = [
-  'bower_components/bootstrap/dist/css/bootstrap.min.css',
-  'styles/**/*.css'
-];
+
 
 
 // Client-side javascript files to inject in order
@@ -34,7 +31,7 @@ var jsFilesToInject = [
   'bower_components/bootstrap/dist/js/bootstrap.min.js',
   'bower_components/angular/angular.js',
   'bower_components/angular-route/angular-route.min.js',
-  
+
 
   // All of the rest of your client-side js files
   // will be injected here in no particular order.
@@ -88,5 +85,3 @@ module.exports.templateFilesToInject = templateFilesToInject.map(function(tplPat
   }
   return require('path').join('assets/',tplPath);
 });
-
-

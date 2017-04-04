@@ -43,8 +43,8 @@ module.exports.connections = {
   sailsMySQL: {
     adapter: 'sails-mysql',
     host: 'localhost', // replace with local host if you are local
-    user: 'worker', //optional
-    password: 'password', // real secure
+    user: 'morten', //optional
+    password: 'Morten123!', // real secure
     database: 'polytone'
   }
 
